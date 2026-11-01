@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duelo de Campeones · League of Legends</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c8aa6e;--gold-d:#785a28;--gold-l:#f0e6d2;--teal:#0ac8b9;--red:#e84057;--mut:#a09b8c;--ok:#5be37d}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:#010a13;color:var(--gold-l);font:16px/1.45 system-ui,'Segoe UI',sans-serif;padding:16px 10px 40px}
+.bg{position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% -10%,#10405f,#010a13 68%)}
+.bg::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34zM28 100L0 84V66l28 16 28-16v18z' fill='none' stroke='%230ac8b9' stroke-opacity='.08'/%3E%3C/svg%3E")}
+.sp{position:fixed;bottom:-20px;width:6px;height:6px;background:var(--teal);border-radius:50%;box-shadow:0 0 10px var(--teal);opacity:0;z-index:-1;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}10%{opacity:.8}100%{transform:translateY(-105vh) translateX(30px);opacity:0}}
+header{text-align:center;margin-bottom:14px}
+h1{font-family:Cinzel,serif;font-weight:900;font-size:clamp(1.5rem,6vw,2.5rem);margin:0;letter-spacing:.06em;background:linear-gradient(90deg,#785a28,#f0e6d2,#c8aa6e,#f0e6d2,#785a28);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite}
+@keyframes shine{to{background-position:-250% 0}}
+.tag{color:var(--teal);font-family:Cinzel,serif;letter-spacing:.2em;font-size:.8rem}
+main{max-width:860px;margin:0 auto}
+.panel{background:linear-gradient(#0a1428f0,#010a13f0);border:2px solid;border-image:linear-gradient(#c8aa6e,#463714) 1;padding:14px;margin-bottom:12px;box-shadow:0 0 30px #0ac8b922}
+h2{font-family:Cinzel,serif;font-weight:700;color:var(--gold);margin:0 0 8px;font-size:1.1rem;letter-spacing:.05em}
+.mut{color:var(--mut);font-size:.9rem}
+input,select{width:100%;padding:10px 12px;margin-bottom:10px;background:#091428;border:1px solid var(--gold-d);color:var(--gold-l);font:inherit}
+input:focus,select:focus,.btn:focus-visible,.ch:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.btn{font-family:Cinzel,serif;font-weight:700;letter-spacing:.06em;cursor:pointer;width:100%;padding:12px 16px;margin-bottom:8px;color:var(--gold);background:linear-gradient(#1e2328,#0a0e13);border:1px solid var(--gold-d);clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);transition:background .2s,color .2s,transform .15s}
+.btn:hover:not(:disabled){background:linear-gradient(#2d3a46,#101820);color:#fff;transform:translateY(-1px)}
+.btn.pri{background:linear-gradient(#e6c97e,#a07a30);color:#1a1204;border:0}
+.btn.pri:hover:not(:disabled){background:linear-gradient(#f6dd9a,#b98b38);color:#000}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:8px}.row>*{flex:1}
+/* selección */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.top select{width:90px;margin:0}
+.code{font-family:Cinzel,serif;font-weight:900;font-size:1.6rem;letter-spacing:.3em;color:var(--gold);cursor:pointer}
+.slots{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 12px}
+.slot{width:130px;aspect-ratio:308/420;border:2px solid var(--gold-d);background:#08101c;position:relative;overflow:hidden;display:grid;place-items:center;text-align:center;color:var(--mut);font-size:.85rem;padding:6px}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;animation:pop .4s both}
+.slot .nm{position:absolute;left:0;right:0;bottom:0;padding:18px 4px 6px;background:linear-gradient(transparent,#000d);font:700 .95rem Cinzel,serif;color:var(--gold)}
+.slot.ok{border-color:var(--ok);box-shadow:0 0 20px #5be37d55}
+.vsb{font:900 1.4rem Cinzel,serif;color:var(--red);text-shadow:0 0 14px var(--red)}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:6px;max-height:300px;overflow-y:auto;padding:4px;margin-bottom:10px;scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent}
+.ch{position:relative;padding:0;border:2px solid #1e3550;background:#000;cursor:pointer;aspect-ratio:1;transition:transform .12s,border-color .12s}
+.ch img{width:100%;display:block}
+.ch:hover{transform:scale(1.08);border-color:var(--teal);z-index:1}
+.ch.sel{border-color:var(--gold);box-shadow:0 0 14px var(--gold)}
+/* arena */
+.arena{display:flex;align-items:center;justify-content:center;gap:6px}
+.fc{flex:1;max-width:340px;transition:filter .5s}
+.fc.dead{filter:grayscale(1) brightness(.5)}
+.art{position:relative;aspect-ratio:308/430;overflow:hidden;border:3px solid var(--gold-d);background:#000}
+#a-card .art{border-color:var(--teal);box-shadow:0 0 28px #0ac8b966}
+#b-card .art{border-color:var(--red);box-shadow:0 0 28px #e8405766}
+.art img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.fc.guard .art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,transparent 40%,#0ac8b988);animation:glow 1s ease-in-out infinite alternate}
+@keyframes glow{to{opacity:.4}}
+.plate{position:absolute;left:0;right:0;bottom:0;padding:26px 6px 6px;text-align:center;background:linear-gradient(transparent,#000e)}
+.plate b{display:block;font:900 clamp(.95rem,3.4vw,1.3rem) Cinzel,serif;color:var(--gold)}
+.plate small{color:var(--mut);font-size:.72rem}
+.who{font:700 .8rem Cinzel,serif;letter-spacing:.1em;margin-bottom:4px;text-align:center}
+#a-card .who{color:var(--teal)}#b-card .who{color:var(--red)}
+.hp{position:relative;height:20px;background:#0a1624;border:1px solid var(--gold-d);margin-top:6px;overflow:hidden}
+.hp i{position:absolute;left:0;top:0;bottom:0}
+.hp .trail{background:#f5d56a;transition:width .7s ease .5s}
+.hp .cur{transition:width .45s ease,background .45s}
+.hp span{position:absolute;inset:0;display:grid;place-items:center;font:700 .78rem system-ui;text-shadow:0 1px 2px #000}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center}
+.chips span{font-size:.7rem;padding:2px 6px;background:#0a1a2e;border:1px solid #1e3550;color:var(--mut)}
+.chips b{color:var(--gold-l)}
+#a-card.lunge{animation:lr .45s}#b-card.lunge{animation:ll .45s}
+@keyframes lr{40%{transform:translateX(26px) scale(1.04)}}@keyframes ll{40%{transform:translateX(-26px) scale(1.04)}}
+.art.hit{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-8px);filter:brightness(2) saturate(2)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.fl{position:absolute;left:0;right:0;top:35%;text-align:center;font:900 2rem Cinzel,serif;pointer-events:none;animation:up 1.1s ease-out forwards;text-shadow:0 2px 6px #000}
+.fl.dmg{color:#ff6b7d}.fl.heal{color:var(--ok)}.fl.guard{color:var(--teal);font-size:1.4rem}
+.fl.crit{color:#ffd45e;font-size:2.8rem}
+@keyframes up{from{opacity:1;transform:translateY(10px) scale(.7)}20%{transform:translateY(-6px) scale(1.2)}to{opacity:0;transform:translateY(-70px)}}
+.turn{text-align:center;font:700 1.15rem Cinzel,serif;margin:12px 0 8px;letter-spacing:.08em;color:var(--mut)}
+.turn.me{color:var(--teal);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{text-shadow:0 0 16px var(--teal)}}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+@media(min-width:700px){.acts{grid-template-columns:repeat(4,1fr)}}
+.act{position:relative;padding:10px 8px;text-align:center;cursor:pointer;color:var(--gold-l);background:linear-gradient(#162a44,#0a1424);border:1px solid var(--gold-d);transition:transform .15s,border-color .15s}
+.act:hover:not(:disabled){transform:translateY(-3px);border-color:var(--teal);box-shadow:0 6px 18px #0ac8b933}
+.act:disabled{opacity:.45;cursor:default}
+.act .g{font-size:1.5rem;color:var(--gold)}
+.act b{display:block;font:700 .9rem Cinzel,serif;color:var(--gold)}
+.act small{display:block;color:var(--mut);font-size:.72rem;line-height:1.25;margin-top:2px}
+.act .cd{position:absolute;inset:0;display:grid;place-items:center;background:#000a;font:900 1.4rem Cinzel,serif;color:#fff}
+#blog{max-height:190px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent}
+.lg{padding:5px 9px;font-size:.9rem;border-left:3px solid var(--gold-d);background:#0a1a2e;animation:slide .3s both}
+.lg.a{border-color:var(--teal)}.lg.b{border-color:var(--red)}
+@keyframes slide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+#end{text-align:center;animation:pop .6s both}
+.banner{font:900 clamp(2.4rem,11vw,3.8rem) Cinzel,serif;letter-spacing:.12em;animation:ban 1s cubic-bezier(.2,.8,.2,1) both}
+.banner.w{color:var(--gold);text-shadow:0 0 30px var(--gold)}.banner.l{color:var(--red);text-shadow:0 0 30px var(--red)}
+@keyframes ban{from{opacity:0;letter-spacing:.7em;transform:scale(1.4)}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<header><h1>DUELO DE CAMPEONES</h1><div class="tag">LEAGUE OF LEGENDS</div></header>
+<main id="view"></main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const s = io();
+let st = null, champs = [], group = null, lastSeq = 0;
+const $ = q => document.querySelector(q);
+const E = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const send = (e, d) => s.emit(e, d);
+const MOVES = [
+  ['attack', '⚔', 'Ataque básico', 'Daño físico. Puede ser crítico o doble.'],
+  ['spell', '✦', 'Hechizo', 'Daño mágico. Recarga 1 turno.'],
+  ['ult', '☄', 'Definitiva', 'Gran daño y robo de vida. Recarga 4.'],
+  ['guard', '◈', 'Guardia', 'Amortigua el próximo golpe y te cura. Recarga 2.']
+];
+
+for (let i = 0; i < 16; i++) {
+  const p = document.createElement('span'); p.className = 'sp';
+  p.style.cssText = `left:${Math.random()*100}%;animation-duration:${8+Math.random()*10}s;animation-delay:${-Math.random()*14}s`;
+  document.body.appendChild(p);
+}
+(async function loadChamps() {
+  try { champs = await (await fetch('/api/champs')).json(); if ($('#grid')) buildGrid(); }
+  catch { setTimeout(loadChamps, 2000); }
+})();
+
+s.on('err', m => alert(m));
+s.on('state', x => { st = x; render(); });
+
+// ---------- Inicio ----------
+$('#view').innerHTML = `<div class="panel" style="max-width:460px;margin:0 auto"><h2>Entra a la arena</h2>
+  <p class="mut">Elige un campeón y pelea por turnos usando sus estadísticas reales de LoL.</p>
+  <input id="name" maxlength="16" placeholder="Tu nombre de invocador" autocomplete="off">
+  <button class="btn pri" onclick="send('create',{name:$('#name').value})">Crear duelo 1 vs 1</button>
+  <button class="btn" onclick="send('create',{name:$('#name').value,bot:true})">Practicar contra el bot</button>
+  <div class="row"><input id="jc" maxlength="4" placeholder="Código" autocomplete="off"><button class="btn" onclick="send('join',{code:$('#jc').value,name:$('#name').value})">Unirme</button></div></div>`;
+
+function render() {
+  const g = st.phase === 'pick' ? 'pick' : 'battle';
+  const fresh = g !== group; group = g;
+  if (fresh) g === 'pick' ? buildPick() : buildBattle();
+  g === 'pick' ? updatePick() : updateBattle(fresh);
+}
+
+// ---------- Selección ----------
+function buildPick() {
+  $('#view').innerHTML = `<div class="panel">
+    <div class="top"><div><span class="mut">Sala</span> <span class="code" id="code" title="Copiar" onclick="navigator.clipboard?.writeText(st.code)"></span></div>
+      <label class="mut">Nivel <select id="lvl" onchange="send('level',this.value)">${Array.from({length:18},(_, i) => `<option>${i+1}</option>`).join('')}</select></label></div>
+    <div class="slots"><div class="slot" id="s-me"></div><div class="vsb">VS</div><div class="slot" id="s-foe"></div></div>
+    <p class="mut" id="msg" style="text-align:center;margin:0 0 8px"></p>
+    <input id="q" placeholder="Buscar campeón…" autocomplete="off" oninput="filterGrid()">
+    <div id="grid"></div>
+    <div class="row"><button class="btn" onclick="rand()">Aleatorio</button><button class="btn pri" id="rdy" onclick="send(st.mine.ready?'unready':'ready')"></button></div></div>`;
+  if (champs.length) buildGrid();
+}
+function buildGrid() {
+  $('#grid').innerHTML = champs.map((c, i) => `<button class="ch" data-i="${i}" data-n="${E(c.name.toLowerCase())}" title="${E(c.name)}" onclick="send('pick',${i})"><img src="${c.icon}" alt="${E(c.name)}" loading="lazy"></button>`).join('');
+  if (st) updatePick();
+}
+function filterGrid() {
+  const q = $('#q').value.trim().toLowerCase();
+  document.querySelectorAll('.ch').forEach(b => (b.hidden = q && !b.dataset.n.includes(q)));
+}
+function rand() { if (champs.length && !st.mine.ready) send('pick', Math.floor(Math.random() * champs.length)); }
+function slot(el, c, ready, empty) {
+  el.className = 'slot' + (ready ? ' ok' : '');
+  el.innerHTML = c ? `<img src="${c.img}" alt=""><div class="nm">${E(c.name)}</div>` : empty;
+}
+function updatePick() {
+  $('#code').textContent = st.code;
+  const lvl = $('#lvl'); lvl.value = st.level; lvl.disabled = !st.host || st.anyReady;
+  const pick = st.mine.pick != null ? champs[st.mine.pick] : null;
+  slot($('#s-me'), pick, st.mine.ready, 'Elige tu<br>campeón');
+  slot($('#s-foe'), null, st.foe?.ready, st.foe ? (st.foe.ready ? `${E(st.foe.name)}<br>¡Listo!` : `${E(st.foe.name)}<br>eligiendo…`) : 'Esperando<br>rival…');
+  $('#msg').textContent = !st.foe ? `Comparte el código ${st.code} con tu rival.` : st.mine.ready ? 'Esperando a que tu rival esté listo…' : 'Elige tu campeón y presiona ¡Listo!';
+  const r = $('#rdy'); r.textContent = st.mine.ready ? 'Cambiar elección' : '¡Listo!';
+  r.disabled = !st.mine.ready && (st.mine.pick == null || !st.foe);
+  document.querySelectorAll('.ch').forEach(b => b.classList.toggle('sel', +b.dataset.i === st.mine.pick));
+}
+
+// ---------- Batalla ----------
+function fighter(k, label) {
+  return `<div class="fc" id="${k}-card"><div class="who" id="${k}-who">${label}</div>
+    <div class="art" id="${k}-art"><img id="${k}-img" alt=""><div class="plate"><b id="${k}-name"></b><small id="${k}-title"></small></div></div>
+    <div class="hp"><i class="trail" id="${k}-trail"></i><i class="cur" id="${k}-cur"></i><span id="${k}-hpt"></span></div>
+    <div class="chips" id="${k}-chips"></div></div>`;
+}
+function buildBattle() {
+  $('#view').innerHTML = `<div class="arena">${fighter('a', 'TÚ')}<div class="vsb">VS</div>${fighter('b', 'RIVAL')}</div>
+    <div class="turn" id="turn"></div>
+    <div class="acts" id="acts">${MOVES.map(m => `<button class="act" data-k="${m[0]}" onclick="send('action','${m[0]}')"><div class="g">${m[1]}</div><b>${m[2]}</b><small>${m[3]}</small><div class="cd" hidden></div></button>`).join('')}</div>
+    <div id="end" class="panel" hidden><div class="banner" id="ban"></div><p class="mut" id="why"></p>
+      <div class="row"><button class="btn pri" onclick="send('rematch')">Revancha</button><button class="btn" onclick="location.reload()">Salir</button></div></div>
+    <div class="panel"><h2>Registro de combate</h2><div id="blog"></div></div>`;
+}
+function setCard(k, f, name) {
+  const img = $(`#${k}-img`); if (img.getAttribute('src') !== f.img) img.src = f.img;
+  $(`#${k}-who`).textContent = name;
+  $(`#${k}-name`).textContent = f.name; $(`#${k}-title`).textContent = f.title;
+  const p = Math.max(0, f.hp / f.maxhp * 100);
+  const cur = $(`#${k}-cur`); cur.style.width = p + '%'; cur.style.background = `hsl(${Math.round(p * 1.2)},70%,42%)`;
+  $(`#${k}-trail`).style.width = p + '%';
+  $(`#${k}-hpt`).textContent = `${f.hp} / ${f.maxhp}`;
+  $(`#${k}-chips`).innerHTML = [['AD', f.ad], ['Armad.', f.ar], ['RM', f.mr], ['V. ataque', f.as], ['V. mov.', f.ms]].map(([a, b]) => `<span>${a} <b>${b}</b></span>`).join('');
+  $(`#${k}-card`).classList.toggle('dead', f.hp <= 0);
+  $(`#${k}-card`).classList.toggle('guard', f.guard);
+}
+function updateBattle(fresh) {
+  const me = st.f[st.me], foe = st.f[st.foeId];
+  setCard('a', me, 'TÚ'); setCard('b', foe, st.foe ? st.foe.name.toUpperCase() : 'RIVAL');
+  if (!fresh && st.seq > lastSeq) playFx();
+  lastSeq = st.seq;
+  const over = st.phase === 'over', mine = st.turn === st.me && !over;
+  const t = $('#turn');
+  t.className = 'turn' + (mine ? ' me' : '');
+  t.textContent = over ? '' : mine ? '¡Es tu turno!' : `Turno de ${st.foe.name}…`;
+  $('#acts').hidden = over;
+  document.querySelectorAll('.act').forEach(b => {
+    const cd = b.dataset.k === 'attack' ? 0 : me.cd[b.dataset.k];
+    b.disabled = !mine || cd > 0;
+    const o = b.querySelector('.cd'); o.hidden = !cd; o.textContent = cd ? cd : '';
+  });
+  $('#end').hidden = !over;
+  if (over) {
+    const win = st.winner === st.me;
+    $('#ban').className = 'banner ' + (win ? 'w' : 'l'); $('#ban').textContent = win ? 'VICTORIA' : 'DERROTA';
+    $('#why').textContent = st.reason === 'abandono' ? 'Tu rival abandonó la partida.' : win ? `${foe.name} cayó en combate.` : `${me.name} cayó en combate.`;
+  }
+  $('#blog').innerHTML = [...st.log].reverse().map(l => `<div class="lg ${l.by === st.me ? 'a' : l.by ? 'b' : ''}">${E(l.text)}</div>`).join('');
+}
+function playFx() {
+  const side = id => (id === st.me ? 'a' : 'b');
+  const card = $(`#${side(st.by)}-card`); card.classList.add('lunge'); setTimeout(() => card.classList.remove('lunge'), 460);
+  st.fx.forEach(x => {
+    const art = $(`#${side(x.t)}-art`), d = document.createElement('div');
+    d.className = 'fl ' + x.k + (x.crit ? ' crit' : '');
+    d.textContent = x.k === 'dmg' ? '-' + x.n : x.k === 'heal' ? '+' + x.n : 'Guardia';
+    art.appendChild(d); setTimeout(() => d.remove(), 1150);
+    if (x.k === 'dmg') { art.classList.add('hit'); setTimeout(() => art.classList.remove('hit'), 420); }
+  });
+}
+</script>
+</body>
+</html>
